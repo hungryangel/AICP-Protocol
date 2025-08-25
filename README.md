@@ -1,196 +1,424 @@
 # AICP - AI Inter-Communication Protocol
 
+[English](README.md) | [한국어](README.ko.md) | [中文](README.zh.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
 
-> 인터넷이 정보의 벽을 허물었다면, 우리는 지능의 인터넷을 만듭니다.
+> If the internet broke down the walls of information, we're building the internet of intelligence.
 
-## 🌐 프로젝트 소개
+[English](#english) | [한국어](#korean)
 
-AICP(AI Inter-Communication Protocol)는 서로 다른 LLM과 사용자가 하나의 네트워크에서 자유롭게 협업할 수 있도록 하는 오픈 프로토콜입니다. MCP(Model Context Protocol) 호환으로 기존 LLM 서비스에서 바로 사용 가능합니다.
+## 🌐 Introduction
 
-### 핵심 특징
+AICP (AI Inter-Communication Protocol) is an open protocol that enables different LLMs and users to collaborate freely within a unified network. With MCP (Model Context Protocol) compatibility, it can be used immediately with existing LLM services.
 
-- **🔌 MCP 호환**: Claude, ChatGPT 등에서 MCP 연결로 즉시 사용
-- **💰 비용 효율적**: API 직접 호출 없이 기존 LLM 구독만으로 이용 가능
-- **🔒 보안 강화**: Docker Secrets, Kubernetes Secrets 지원
-- **🚀 쉬운 배포**: Docker Compose 한 줄로 실행
-- **📊 실시간 모니터링**: Prometheus + Grafana 대시보드 제공
+### 🎯 Key Differentiators
 
-## 🏗️ 아키텍처
-┌─────────────────────────────────────────────────┐
-│                   사용자 (User)                  │
-└─────────────┬───────────────────┬───────────────┘
-              │                   │
-         MCP Protocol        MCP Protocol
-              │                   │
-    ┌─────────▼─────────┐ ┌──────▼──────┐
-    │   Claude Console  │ │   ChatGPT   │
-    │   (MCP Client)    │ │ (MCP Client)│
-    └─────────┬─────────┘ └──────┬──────┘
-              │                   │
-         MCP WebSocket       MCP WebSocket
-              │                   │
-    ┌─────────▼───────────────────▼──────────────┐
-    │         AICP Neural Bus (MCP Server)       │
-    │  ┌────────────────────────────────────┐    │
-    │  │  • 지능형 라우팅 엔진              │    │
-    │  │  • 공유 상태 허브 (SSoT)           │    │
-    │  │  • 협업 오케스트레이션             │    │
-    │  └────────────────────────────────────┘    │
-    └─────────────────────────────────────────────┘
-text## 🚀 빠른 시작
+- **MCP (Model Context Protocol)**: LLM ↔ Tools/Data connection
+- **ACP (Agent Communication Protocol)**: AI ↔ AI direct communication
+- **AICP (Our Innovation)**: [User+LLM] ↔ [User+LLM] network
 
-### 방법 1: Docker Compose (권장)
+AICP creates an "Intelligence Network" where users bring their own AI agents (Claude, GPT, Gemini, etc.) and collaborate in real-time, sharing context and distributing tasks intelligently.
+
+## ✨ Key Features
+
+- 🔌 **MCP Compatible**: Works instantly with Claude, ChatGPT, and other MCP-enabled clients
+- 💰 **Cost Effective**: No API keys required - use your existing LLM subscriptions
+- 🚀 **Easy Deployment**: One-line Docker Compose setup
+- 🔒 **Security**: JWT authentication, TLS/SSL support
+- 📊 **Real-time Monitoring**: Prometheus + Grafana dashboards
+- 🤖 **Intelligent Routing**: Automatic selection of optimal AI for each task
+- 🌍 **Multi-User Network**: Connect multiple users through their LLMs
+
+## 🏗️ Architecture
+
+### Core Concept: Intelligence Network
+
+AICP implements a true **intelligence network where users connect through their own LLMs**, not just simple AI tool connections.
+
+```
+        [User A + Claude]              [User B + GPT-4]
+                │                            │
+                └──────────┬─────────────────┘
+                           │
+                    ┌──────▼──────┐
+                    │  AICP Hub   │
+                    │ (Neural Bus)│
+                    └──────┬──────┘
+                           │
+                ┌──────────┴─────────────────┐
+                │                            │
+        [User C + Gemini]              [User D + Claude]
+```
+
+### Detailed Architecture
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    User Network Layer                     │
+├──────────────────────────────────────────────────────────┤
+│   User A                 User B                User C     │
+│     ↓                      ↓                     ↓        │
+│   Claude                ChatGPT              Gemini       │
+└─────┬──────────────────────┬────────────────────┬────────┘
+      │                      │                    │
+      └──────────────────────┼────────────────────┘
+                             │
+                    MCP WebSocket Protocol
+                             │
+┌─────────────────────────────▼────────────────────────────┐
+│                    AICP Neural Bus                       │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │           🧠 Intelligent Routing Engine          │   │
+│  │                                                  │   │
+│  │  • User intent analysis                         │   │
+│  │  • Optimal AI agent matching                    │   │
+│  │  • Load balancing & QoS management              │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │           🔄 Collaboration Orchestration         │   │
+│  │                                                  │   │
+│  │  • Multi-user session management                │   │
+│  │  • Real-time message broadcasting               │   │
+│  │  • Task distribution & synchronization          │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │           💾 Shared State Hub (SSoT)            │   │
+│  │                                                  │   │
+│  │  • Global context repository                    │   │
+│  │  • Inter-user data sharing                      │   │
+│  │  • Real-time state synchronization              │   │
+│  └──────────────────────────────────────────────────┘   │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+         ┌─────────────┴─────────────┐
+         │                           │
+    ┌────▼────┐              ┌──────▼──────┐
+    │  Redis  │              │  PostgreSQL │
+    │ (Cache) │              │  (Persist)  │
+    └─────────┘              └─────────────┘
+```
+
+### Communication Flow
+
+```
+User1+Claude ─────► AICP Hub ─────► User2+GPT
+     ▲                 │                 │
+     │                 ▼                 ▼
+     └──── Shared Context (SSoT) ◄──────┘
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Python 3.11+ (optional)
+- Git
+
+### Installation
 
 ```bash
-# 1. 저장소 클론
+# 1. Clone repository
 git clone https://github.com/your-username/AICP-Protocol.git
 cd AICP-Protocol
 
-# 2. 시크릿 파일 생성
-./scripts/setup-secrets.sh
+# 2. Run setup script
+chmod +x setup-aicp.sh
+./setup-aicp.sh
 
-# 3. MCP 서버 실행 (API 키 불필요)
-docker-compose -f docker-compose.secure.yml up -d
+# 3. Verify services
+docker ps
+curl http://localhost:8080/health
+```
 
-# 4. 상태 확인
-docker-compose ps
-방법 2: 로컬 Python 환경
-bash# 1. 가상환경 생성
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+### Manual Setup (Docker Compose)
 
-# 2. 의존성 설치
-pip install -r requirements.txt
+```bash
+# Basic setup
+docker-compose up -d
 
-# 3. MCP 서버 실행
-python -m aicp.mcp_server
+# Full stack with monitoring
+docker-compose -f docker/docker-compose.secure.yml --profile monitoring up -d
+```
 
-# 서버가 ws://localhost:8765 에서 실행됨
-📖 사용 방법
-Claude에서 연결하기
+## 📖 Usage
 
-Claude 콘솔에서 MCP 설정 열기
-새 MCP 서버 추가:
-textURL: ws://your-server:8765/mcp
-Name: AICP Neural Bus
+### 1. WebSocket Connection Test
 
-연결 후 사용 가능한 도구:
+```python
+import asyncio
+import websockets
+import json
 
-route_to_agent: 최적 AI 에이전트로 라우팅
-share_context: 에이전트 간 컨텍스트 공유
-orchestrate_collaboration: 다중 에이전트 협업
+async def test_connection():
+    uri = "ws://localhost:8765/mcp"
+    async with websockets.connect(uri) as ws:
+        # Initialize
+        await ws.send(json.dumps({
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {"clientInfo": {"name": "test", "version": "1.0"}}
+        }))
+        response = await ws.recv()
+        print("Connected:", response)
 
+asyncio.run(test_connection())
+```
 
+### 2. AI Routing
 
-Python SDK 사용
-pythonfrom aicp import MCPClient
-
-# MCP 클라이언트 생성
-client = MCPClient("ws://localhost:8765/mcp")
-
-# 도구 호출
-result = await client.call_tool(
-    "route_to_agent",
-    {
-        "message": "이 데이터를 분석해주세요",
-        "target_capabilities": ["analysis", "reasoning"]
+```python
+# Route to optimal AI agent
+await ws.send(json.dumps({
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+        "name": "route_to_agent",
+        "arguments": {
+            "message": "Analyze this complex dataset",
+            "target_capabilities": ["analysis", "reasoning"]
+        }
     }
-)
+}))
+```
 
-# 컨텍스트 공유
-await client.call_tool(
-    "share_context",
-    {
-        "context_key": "project_data",
-        "context_value": {"status": "진행중", "progress": 0.7}
+### 3. Context Sharing
+
+```python
+# Share context between AI agents
+await ws.send(json.dumps({
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+        "name": "share_context",
+        "arguments": {
+            "context_key": "project_status",
+            "context_value": {"phase": "development", "progress": 75}
+        }
     }
-)
-📁 프로젝트 구조
-textAICP-Protocol/
-├── aicp/                    # 핵심 라이브러리
+}))
+```
+
+## 🛠️ MCP Tools
+
+| Tool Name | Description | Parameters |
+|-----------|-------------|------------|
+| `route_to_agent` | Route message to optimal AI agent | `message`, `target_capabilities`, `context` |
+| `share_context` | Share context between agents | `context_key`, `context_value` |
+| `orchestrate_collaboration` | Orchestrate multi-agent collaboration | `task`, `agents` |
+
+## 🎬 Use Cases
+
+### Multi-AI Collaborative Project
+```
+Team Member A (Claude) → "Start project proposal"
+         ↓
+    AICP Hub → Distributes tasks
+         ↓
+Team Member B (GPT-4) → "Market research"
+Team Member C (Gemini) → "Technical specifications"
+         ↓
+    AICP Hub → Integrates results
+         ↓
+    Shared document for all team members
+```
+
+### Real-time Translation Meeting
+- Korean User (Claude) ↔ AICP ↔ US User (GPT-4)
+- Real-time translation with cultural context
+- Automatic meeting minutes generation
+
+## 📊 Monitoring
+
+- **Health Check**: `http://localhost:8080/health`
+- **Metrics**: `http://localhost:8080/metrics`
+- **Prometheus**: `http://localhost:9090` (optional)
+- **Grafana**: `http://localhost:3001` (optional)
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# MCP Server Configuration
+HOST=0.0.0.0
+PORT=8765
+HTTP_PORT=8080
+
+# Redis Configuration
+REDIS_URL=redis://redis:6379/0
+
+# Logging
+LOG_LEVEL=INFO
+
+# Security (Production)
+JWT_REQUIRED=true
+JWT_SECRET=your-secret-key
+```
+
+### Docker Compose Profiles
+
+```bash
+# With database
+docker-compose --profile db up -d
+
+# With monitoring
+docker-compose --profile monitoring up -d
+
+# With proxy
+docker-compose --profile proxy up -d
+```
+
+## 📁 Project Structure
+
+```
+AICP-Protocol/
+├── aicp/                    # Core library
 │   ├── __init__.py
-│   ├── mcp_server.py       # MCP 서버 구현
-│   ├── neural_bus.py       # Neural Bus 엔진
-│   └── shared_state.py     # SSoT 구현
-├── docker/                  # Docker 설정
+│   ├── mcp_server.py       # MCP server implementation
+│   ├── neural_bus.py       # Routing engine
+│   ├── shared_state.py     # SSoT implementation
+│   └── security.py         # Security module
+├── docker/                  # Docker configuration
 │   ├── Dockerfile.mcp
-│   └── docker-compose.secure.yml
-├── examples/               # 사용 예제
+│   ├── docker-compose.secure.yml
+│   └── nginx/              # Proxy configuration
+├── examples/               # Usage examples
 │   ├── basic_routing.py
 │   └── collaboration.py
-├── tests/                  # 테스트
-│   ├── unit/
-│   └── integration/
-├── docs/                   # 문서
-│   ├── MCP_INTEGRATION.md
-│   ├── API_REFERENCE.md
-│   └── SECURITY.md
-├── scripts/               # 유틸리티 스크립트
-│   ├── setup-secrets.sh
-│   └── health-check.sh
-├── requirements.txt
-├── LICENSE               # MIT 라이선스
-└── README.md
-🔒 보안 고려사항
+├── tests/                  # Tests
+├── docs/                   # Documentation
+├── scripts/                # Utilities
+├── setup-aicp.sh          # Setup script
+├── requirements.txt        # Python dependencies
+└── README.md              # This document
+```
 
-시크릿 관리: Docker Secrets / Kubernetes Secrets 사용
-네트워크 격리: 내부 네트워크만 접근 가능하도록 설정
-TLS/SSL: 프로덕션에서 필수 (nginx 리버스 프록시)
-인증: JWT 토큰 기반 인증 (옵션)
+## 🧪 Testing
 
-자세한 내용은 SECURITY.md 참조
-🤝 기여하기
-AICP는 오픈소스 프로젝트입니다! 기여를 환영합니다.
-
-Fork the Project
-Create your Feature Branch (git checkout -b feature/AmazingFeature)
-Commit your Changes (git commit -m 'Add some AmazingFeature')
-Push to the Branch (git push origin feature/AmazingFeature)
-Open a Pull Request
-
-📊 로드맵
-
- MCP 서버 구현
- Docker 배포 지원
- Kubernetes Helm Chart
- 웹 대시보드
- 더 많은 LLM 플랫폼 지원
- 플러그인 시스템
-
-📄 라이선스
-MIT License - 자세한 내용은 LICENSE 파일 참조
-🙏 감사의 말
-
-Anthropic의 MCP 프로토콜
-오픈소스 커뮤니티
-
-📞 연락처
-
-GitHub Issues: 문제 보고
-Discussions: 토론 참여
-
-
-⭐ 이 프로젝트가 도움이 되었다면 Star를 눌러주세요!
-
-
-## 선택 기능 (Profiles)
-
-### DB(Postgres)
 ```bash
-docker compose -f docker/docker-compose.secure.yml --profile db up -d
-# psql 접속 예: psql -h localhost -U aicp_user -d aicp
-모니터링(Prometheus/Grafana)
-bash
-코드 복사
-docker compose -f docker/docker-compose.secure.yml --profile monitoring up -d
-# Prometheus: http://localhost:9090
-# Grafana:    http://localhost:3001  (admin / admin)
-프록시(NGINX)
-bash
-코드 복사
-docker compose -f docker/docker-compose.secure.yml --profile proxy up -d
-# WS 경로: ws://localhost/mcp  (백엔드 ws://aicp-mcp-server:8765)
+# Unit tests
+python -m pytest tests/
+
+# Integration tests
+python examples/basic_routing.py
+python examples/collaboration.py
+
+# Load testing
+python tests/load_test.py
+```
+
+## 🔒 Security
+
+- **JWT Authentication**: Required for production
+- **TLS/SSL**: Encryption via NGINX proxy
+- **Rate Limiting**: Per-session request limits
+- **Docker Secrets**: Sensitive information management
+
+See [SECURITY.md](docs/SECURITY.md) for details
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📈 Roadmap
+
+- [x] MCP server implementation
+- [x] Docker deployment support
+- [x] Redis-based SSoT
+- [x] Intelligent routing
+- [ ] Kubernetes Helm Chart
+- [ ] Web dashboard
+- [ ] Official Claude Desktop support
+- [ ] Plugin system
+- [ ] Distributed architecture
+- [ ] Multi-language support
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details
+
+## 🙏 Acknowledgments
+
+- [Anthropic](https://anthropic.com) for the MCP protocol
+- Open source community
+- All contributors
+
+## 📞 Contact
+
+- **GitHub Issues**: [Report bugs](https://github.com/hungryangel/AICP-Protocol/issues)
+- **Discussions**: [Join discussions](https://github.com/hungryangel/AICP-Protocol/discussions)
+- **Email**: sulpterazz1@gmail.com
+
+## 📚 How to Cite AICP
+
+If you use AICP in your research or project, please cite:
+
+**BibTeX:**
+```bibtex
+@software{aicp2025protocol,
+  title = {AICP: AI Inter-Communication Protocol - Building the Intelligence Internet},
+  author = {AHN SANGHYO},
+  year = {2025},
+  url = {https://github.com/hungryangel/AICP-Protocol},
+  note = {An open protocol for multi-user LLM collaboration networks}
+}
+```
+
+**APA Style:**
+hungryangel. (2025). *AICP: AI Inter-Communication Protocol* [Computer software]. 
+GitHub. https://github.com/hungryangel/AICP-Protocol
+
+---
+
+<p align="center">
+  ⭐ If this project helps you, please give it a star!
+</p>
+
+<p align="center">
+  Made with ❤️ by the AICP Team
+</p>
+
+---
+
+## Korean
+
+<details>
+<summary>한국어 문서 (클릭하여 펼치기)</summary>
+
+## 🌐 소개
+
+AICP(AI Inter-Communication Protocol)는 서로 다른 LLM과 사용자가 하나의 네트워크에서 자유롭게 협업할 수 있도록 하는 오픈 프로토콜입니다. MCP(Model Context Protocol) 호환으로 기존 LLM 서비스에서 바로 사용 가능합니다.
+
+### 빠른 시작
+
+```bash
+# 저장소 클론
+git clone https://github.com/your-username/AICP-Protocol.git
+cd AICP-Protocol
+
+# 설치 스크립트 실행
+chmod +x setup-aicp.sh
+./setup-aicp.sh
+```
+
+자세한 한국어 문서는 [README.ko.md]를 참조하세요.
+
+</details>
