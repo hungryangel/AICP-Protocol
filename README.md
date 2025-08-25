@@ -10,8 +10,6 @@
 
 > If the internet broke down the walls of information, we're building the internet of intelligence.
 
-[English](#english) | [한국어](#korean)
-
 ## 🌐 Introduction
 
 AICP (AI Inter-Communication Protocol) is an open protocol that enables different LLMs and users to collaborate freely within a unified network. With MCP (Model Context Protocol) compatibility, it can be used immediately with existing LLM services.
