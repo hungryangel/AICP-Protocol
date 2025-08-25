@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # ───────────────────────────────
+  # AICP MCP 서버 (기본 서비스)
+  # ───────────────────────────────
+  aicp-mcp-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.mcp
+    container_name: aicp-mcp
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8765
+      - HTTP_PORT=8080
+      - LOG_LEVEL=INFO
+      - REDIS_URL=redis://redis:6379/0
+      # (옵션) Postgres 사용 시 애플리케이션에서 읽도록 전달
+      # - POSTGRES_URL=postgresql://aicp_user:changeme@postgres:5432/aicp
+    ports:
+      - "8765:8765"   # MCP WS
+      - "8080:8080"   # health/metrics
+    depends_on:
+      - redis
+    networks: [aicp-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  # ───────────────────────────────
+  # Redis (SSoT 캐시/키-값) - 기본
+  # ───────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: aicp-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks: [aicp-network]
+    restart: unless-stopped
+
+  # ───────────────────────────────
+  # Postgres (옵션, profile: db)
+  # ───────────────────────────────
+  postgres:
+    profiles: ["db"]
+    image: postgres:15-alpine
+    container_name: aicp-postgres
+    environment:
+      - POSTGRES_DB=aicp
+      - POSTGRES_USER=aicp_user
+      - POSTGRES_PASSWORD=changeme   # 데모용. 운영에서는 꼭 바꾸세요.
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ../docker/initdb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pg-data:/var/lib/postgresql/data
+    networks: [aicp-network]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aicp_user -d aicp"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  # ───────────────────────────────
+  # Prometheus (옵션, profile: monitoring)
+  # ───────────────────────────────
+  prometheus:
+    profiles: ["monitoring"]
+    image: prom/prometheus:latest
+    container_name: aicp-prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ../docker/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    networks: [aicp-network]
+    restart: unless-stopped
+
+  # ───────────────────────────────
+  # Grafana (옵션, profile: monitoring)
+  # ───────────────────────────────
+  grafana:
+    profiles: ["monitoring"]
+    image: grafana/grafana:latest
+    container_name: aicp-grafana
+    ports:
+      - "127.0.0.1:3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin   # 데모용. 운영에서 변경 필수.
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      - ../docker/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../docker/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks: [aicp-network]
+    restart: unless-stopped
+
+  # ───────────────────────────────
+  # Nginx 프록시 (옵션, profile: proxy)
+  # - /        → aicp-mcp-server:8080 (헬스/메트릭)
+  # - /mcp     → aicp-mcp-server:8765 (WS 업그레이드)
+  # ───────────────────────────────
+  nginx:
+    profiles: ["proxy"]
+    image: nginx:1.25-alpine
+    container_name: aicp-nginx
+    ports:
+      - "80:80"
+      # (옵션) TLS 사용 시 아래처럼 443도 열고 인증서 마운트
+      # - "443:443"
+    volumes:
+      - ../docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # - ../docker/nginx/ssl:/etc/nginx/ssl:ro   # (옵션) TLS 인증서
+    depends_on:
+      - aicp-mcp-server
+    networks: [aicp-network]
+    restart: unless-stopped
+
+networks:
+  aicp-network:
+    driver: bridge
+
+volumes:
+  prom-data:
+  grafana-data:
+  pg-data:

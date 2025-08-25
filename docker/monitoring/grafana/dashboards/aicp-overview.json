@@ -1,0 +1,42 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Active WS Connections",
+      "targets": [{"expr": "aicp_ws_connections"}],
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0}
+    },
+    {
+      "type": "stat",
+      "title": "Routing Success",
+      "targets": [{"expr": "sum(increase(aicp_routing_success_total[5m]))"}],
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0}
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Requests",
+      "targets": [{"expr": "sum by (path,status) (rate(aicp_http_requests_total[1m]))"}],
+      "gridPos": {"h": 8, "w": 16, "x": 0, "y": 4}
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Latency (p95)",
+      "targets": [{"expr": "histogram_quantile(0.95, sum(rate(aicp_http_latency_seconds_bucket[5m])) by (le))"}],
+      "gridPos": {"h": 8, "w": 16, "x": 0, "y": 12}
+    },
+    {
+      "type": "graph",
+      "title": "Errors",
+      "targets": [{"expr": "sum by (kind) (increase(aicp_errors_total[5m]))"}],
+      "gridPos": {"h": 8, "w": 16, "x": 0, "y": 20}
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "title": "AICP Overview",
+  "version": 1
+}

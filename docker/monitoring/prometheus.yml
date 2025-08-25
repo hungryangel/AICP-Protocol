@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus 자기 자신
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  # AICP MCP 서버 메트릭
+  - job_name: 'aicp-mcp'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['aicp-mcp-server:8080']

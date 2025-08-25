@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  aicp-mcp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mcp
+    container_name: aicp-mcp
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8765
+      - HTTP_PORT=8080
+      - LOG_LEVEL=INFO
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_REQUIRED=false        # 운영 전환 시 true
+      # - JWT_SECRET=changeme     # 운영에서 설정
+      # - JWT_AUDIENCE=your-aud   # 필요 시
+    ports:
+      - "8765:8765"
+      - "8080:8080"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: aicp-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped

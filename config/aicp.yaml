@@ -1,0 +1,29 @@
+# AICP Configuration
+version: "1.2"
+server:
+  host: "0.0.0.0"
+  port: 8765
+  http_port: 8080
+  ssl: false
+
+mcp:
+  enabled: true
+  protocol_version: "2025-06-18"
+
+security:
+  jwt_required: false   # 운영 시 true 권장
+  audience: null
+
+limits:
+  websocket_max_bytes: 1048576
+  rate_per_sec: 10
+  rate_burst: 20
+
+redis:
+  url: "redis://redis:6379/0"
+
+logging:
+  level: "INFO"
+
+monitoring:
+  prometheus: true
